@@ -36,7 +36,7 @@ export function makeResponse(
 
   return {
     id: "resp_test_0001",
-    model: "gpt-5.6-sol",
+    model: "gpt-6-astra",
     status: "completed",
     output_text: outputText,
     output: [

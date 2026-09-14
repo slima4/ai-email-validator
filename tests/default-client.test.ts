@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type * as OpenAIModule from "openai";
 
 import { resetDefaultClients } from "../src/client.js";
-import { validateEmail } from "../src/index.js";
+import { DEFAULT_MODEL, validateEmail } from "../src/index.js";
 import { makeResponse } from "./helpers/fake-client.js";
 
 // Replace the OpenAI constructor so the default client path can be exercised
@@ -109,7 +109,7 @@ describe("default client", () => {
     });
 
     expect(mocks.create).toHaveBeenCalledWith(
-      expect.objectContaining({ model: "gpt-5.6-sol", reasoning: { effort: "max" } }),
+      expect.objectContaining({ model: DEFAULT_MODEL, reasoning: { effort: "max" } }),
       { signal: controller.signal, timeout: 1_000, maxRetries: 0 },
     );
   });

@@ -48,7 +48,7 @@ body:
     attributes:
       label: Model
       description: Only if the bug involves the model's behaviour.
-      placeholder: gpt-5.6-sol
+      placeholder: gpt-6-astra
   - type: checkboxes
     id: checks
     attributes:

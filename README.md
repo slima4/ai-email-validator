@@ -9,7 +9,7 @@
 [![TypeScript](https://img.shields.io/npm/types/ai-email-validator.svg)](https://www.typescriptlang.org)
 [![License: MIT](https://img.shields.io/npm/l/ai-email-validator.svg)](./LICENSE)
 
-`ai-email-validator` decides whether a string is a valid email address by asking a large language model. Each call sends the address to OpenAI's GPT-5.6 Sol at maximum reasoning effort, requires a strictly typed `{ "valid": boolean }` response through Structured Outputs, and resolves to a boolean.
+`ai-email-validator` decides whether a string is a valid email address by asking a large language model. Each call sends the address to OpenAI's GPT-6 Astra at maximum reasoning effort, requires a strictly typed `{ "valid": boolean }` response through Structured Outputs, and resolves to a boolean.
 
 It is small, fully typed, thoroughly tested, and several orders of magnitude slower than the alternative.
 
@@ -47,7 +47,7 @@ The library reads two environment variables:
 | Variable                   | Required | Description                                     |
 | -------------------------- | -------- | ----------------------------------------------- |
 | `OPENAI_API_KEY`           | Yes      | Your OpenAI API key.                            |
-| `AI_EMAIL_VALIDATOR_MODEL` | No       | Overrides the model. Defaults to `gpt-5.6-sol`. |
+| `AI_EMAIL_VALIDATOR_MODEL` | No       | Overrides the model. Defaults to `gpt-6-astra`. |
 
 Everything can also be set per call through the options object. Options take precedence over environment variables. See [`.env.example`](./.env.example).
 
@@ -98,7 +98,7 @@ Every option is optional.
 | Option            | Type                    | Default                      | Description                                                                      |
 | ----------------- | ----------------------- | ---------------------------- | -------------------------------------------------------------------------------- |
 | `apiKey`          | `string`                | `process.env.OPENAI_API_KEY` | API key for the default client. Ignored when `client` is set.                    |
-| `model`           | `string`                | `"gpt-5.6-sol"`              | Model ID. Also settable through `AI_EMAIL_VALIDATOR_MODEL`.                      |
+| `model`           | `string`                | `"gpt-6-astra"`              | Model ID. Also settable through `AI_EMAIL_VALIDATOR_MODEL`.                      |
 | `reasoningEffort` | `ReasoningEffort`       | `"max"`                      | One of `"none"`, `"minimal"`, `"low"`, `"medium"`, `"high"`, `"xhigh"`, `"max"`. |
 | `timeoutMs`       | `number`                | SDK default (10 minutes)     | Per-request timeout in milliseconds.                                             |
 | `maxRetries`      | `number`                | SDK default (2)              | Retries for connection errors, 408, 409, 429 and 5xx responses.                  |

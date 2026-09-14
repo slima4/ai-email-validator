@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Default model is now `gpt-6-astra`. `gpt-5.6-sol` remains usable through the
+  `model` option or `AI_EMAIL_VALIDATOR_MODEL`.
+
 ## [1.0.0] - 2026-09-14
 
 The public API (`isValidEmail`, `validateEmail`, the options object, the

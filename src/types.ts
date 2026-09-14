@@ -87,7 +87,7 @@ export interface EmailValidationResult {
 }
 
 /** Default model. Override with `AI_EMAIL_VALIDATOR_MODEL` or the `model` option. */
-export const DEFAULT_MODEL = "gpt-5.6-sol";
+export const DEFAULT_MODEL = "gpt-6-astra";
 
 /** Default reasoning effort. */
 export const DEFAULT_REASONING_EFFORT: ReasoningEffort = "max";

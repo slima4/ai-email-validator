@@ -16,7 +16,7 @@ describe("validateEmail", () => {
   describe("result", () => {
     it("returns the verdict, the normalized email, the model and the response id", async () => {
       const { client } = createFakeClient(
-        makeResponse({ id: "resp_abc", model: "gpt-5.6-sol-2026-09-01" }),
+        makeResponse({ id: "resp_abc", model: "gpt-6-astra-2026-09-01" }),
       );
 
       const result = await validateEmail("john@example.com", { client });
@@ -24,7 +24,7 @@ describe("validateEmail", () => {
       expect(result).toMatchObject({
         valid: true,
         email: "john@example.com",
-        model: "gpt-5.6-sol-2026-09-01",
+        model: "gpt-6-astra-2026-09-01",
         responseId: "resp_abc",
       });
     });

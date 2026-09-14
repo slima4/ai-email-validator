@@ -31,7 +31,7 @@ import {
  * @example
  * ```ts
  * const result = await validateEmail("john@example.com");
- * // { valid: true, email: "john@example.com", model: "gpt-5.6-sol", responseId: "resp_…", usage: { … } }
+ * // { valid: true, email: "john@example.com", model: "gpt-6-astra", responseId: "resp_…", usage: { … } }
  * ```
  *
  * @throws {InvalidInputError} if `email` is not a usable string. No API call is made.
