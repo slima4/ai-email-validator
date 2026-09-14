@@ -84,7 +84,22 @@ Use the [issue templates](https://github.com/slima4/ai-email-validator/issues/ne
 
 ## Releasing (maintainers)
 
-1. Update `CHANGELOG.md`: move the `Unreleased` entries under a new version heading with today's date.
-2. Bump the version: `npm version <patch|minor|major>`. This creates a commit and a tag.
-3. Push the commit and the tag: `git push --follow-tags`.
-4. The release workflow publishes to npm from the tag. Alternatively, run `npm publish` locally; `prepublishOnly` runs lint, typecheck, tests and the build first.
+Releases are cut by pushing a version tag. GitHub Actions publishes to npm through trusted publishing (no token to rotate) and creates a GitHub Release with the matching CHANGELOG section as its notes.
+
+1. Make sure `main` is green.
+2. Update `CHANGELOG.md`: move the `Unreleased` entries under a new version heading with today's date, and add the comparison link at the bottom.
+3. Bump the version, which also creates the commit and the tag:
+
+   ```sh
+   npm version <patch|minor|major>
+   ```
+
+4. Push the commit and the tag:
+
+   ```sh
+   git push --follow-tags
+   ```
+
+5. Watch the [Release workflow](https://github.com/slima4/ai-email-validator/actions/workflows/release.yml). It refuses to run if the tag and `package.json` disagree, skips publishing if the version is already on the registry, and is safe to re-run.
+
+Publishing locally with `npm publish` still works as a fallback; `prepublishOnly` runs the full check suite first.

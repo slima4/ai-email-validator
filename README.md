@@ -3,6 +3,7 @@
 **Email validation was a solved problem. So we unsolved it with AI.**
 
 [![npm version](https://img.shields.io/npm/v/ai-email-validator.svg)](https://www.npmjs.com/package/ai-email-validator)
+[![npm downloads](https://img.shields.io/npm/dm/ai-email-validator.svg)](https://www.npmjs.com/package/ai-email-validator)
 [![CI](https://github.com/slima4/ai-email-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/slima4/ai-email-validator/actions/workflows/ci.yml)
 [![Node.js](https://img.shields.io/node/v/ai-email-validator.svg)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/npm/types/ai-email-validator.svg)](https://www.typescriptlang.org)
@@ -100,6 +101,7 @@ Every option is optional.
 | `model`           | `string`                | `"gpt-5.6-sol"`              | Model ID. Also settable through `AI_EMAIL_VALIDATOR_MODEL`.                      |
 | `reasoningEffort` | `ReasoningEffort`       | `"max"`                      | One of `"none"`, `"minimal"`, `"low"`, `"medium"`, `"high"`, `"xhigh"`, `"max"`. |
 | `timeoutMs`       | `number`                | SDK default (10 minutes)     | Per-request timeout in milliseconds.                                             |
+| `maxRetries`      | `number`                | SDK default (2)              | Retries for connection errors, 408, 409, 429 and 5xx responses.                  |
 | `signal`          | `AbortSignal`           | –                            | Cancels the request. Surfaces as an `ApiError`.                                  |
 | `client`          | `EmailValidationClient` | a new `OpenAI` instance      | Bring your own client: a configured `OpenAI`, a proxy, or a fake for tests.      |
 
@@ -110,7 +112,7 @@ All errors extend `AiEmailValidatorError`, which extends `Error`. Catch the base
 | Class                   | When                                                                                                              | Notable fields                         |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
 | `InvalidInputError`     | The input is not a string, is empty, exceeds 254 characters, or contains control characters. No API call is made. | `input`                                |
-| `ConfigurationError`    | No API key is available, or an option such as `timeoutMs` is out of range.                                        | –                                      |
+| `ConfigurationError`    | No API key is available, or an option such as `model`, `timeoutMs` or `maxRetries` is invalid.                    | –                                      |
 | `ApiError`              | The OpenAI request failed: network, authentication, rate limit, server error, timeout, or abort.                  | `status`, `code`, `requestId`, `cause` |
 | `StructuredOutputError` | The model did not return exactly `{ "valid": boolean }`, refused, or the response was incomplete.                 | `reason`, `rawOutput`                  |
 
@@ -149,6 +151,17 @@ try {
 }
 ```
 
+### Tuning timeouts and retries
+
+```ts
+const valid = await isValidEmail("john@example.com", {
+  timeoutMs: 60_000, // give up after a minute
+  maxRetries: 0, // and do not try again
+});
+```
+
+The OpenAI SDK retries connection errors, 408, 409, 429 and 5xx responses with exponential backoff. `maxRetries` caps that; `timeoutMs` applies to each attempt.
+
 ### Cancelling a slow validation
 
 ```ts
@@ -173,7 +186,7 @@ const client = new OpenAI({
 const valid = await isValidEmail("john@example.com", { client });
 ```
 
-Anything with a compatible `responses.create` method satisfies `EmailValidationClient`, which is also how the test suite avoids spending real tokens.
+Anything with a compatible `responses.create` method satisfies `EmailValidationClient`, which is also how the test suite avoids spending real tokens. When no `client` is given, the library builds one `OpenAI` instance per API key and reuses it across calls.
 
 ### Lowering the reasoning effort
 
@@ -220,6 +233,7 @@ Ideas that fit the project: better prompts, better error reporting, support for 
 
 ## Security
 
+- Releases are published from GitHub Actions through npm trusted publishing with [provenance attestations](https://docs.npmjs.com/generating-provenance-statements). No long-lived npm token exists for this package. You can verify a downloaded version with `npm audit signatures`.
 - Your API key is read from the environment or the `apiKey` option and passed straight to the OpenAI SDK. It is never logged.
 - Requests are sent with `store: false`, so OpenAI does not retain them beyond normal abuse monitoring.
 - The address you validate is sent to a third party. Do not use this library on data you are not allowed to share with OpenAI.

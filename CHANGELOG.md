@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `maxRetries` option, forwarded to the OpenAI SDK's per-request retry limit.
+- `npm run check:package`, which verifies the published `exports` map and type
+  declarations with `publint` and `@arethetypeswrong/cli`. It also runs in CI
+  and before every publish.
+- Automated releases: pushing a `v*` tag publishes to npm through trusted
+  publishing with provenance and creates a GitHub Release from the matching
+  CHANGELOG section.
+- Dependabot for npm and GitHub Actions, CODEOWNERS, and a production
+  dependency audit in CI.
+
+### Changed
+
+- The default client is now created once per API key and reused across calls.
+- `model` is validated and trimmed; an empty or non-string model throws a
+  `ConfigurationError` before any request is made.
+
 ## [0.1.0] - 2026-09-14
 
 ### Added
