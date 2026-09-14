@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-14
+
 ### Changed
 
 - Default model is now `gpt-6-astra`. `gpt-5.6-sol` remains usable through the
@@ -58,6 +60,7 @@ semantic versioning.
 - GitHub Actions CI across Node.js 20, 22 and 24, plus a tag-triggered release
   workflow.
 
-[Unreleased]: https://github.com/slima4/ai-email-validator/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/slima4/ai-email-validator/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/slima4/ai-email-validator/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/slima4/ai-email-validator/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/slima4/ai-email-validator/releases/tag/v0.1.0
