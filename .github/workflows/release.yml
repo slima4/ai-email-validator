@@ -11,6 +11,12 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to (re)release, e.g. v1.2.3"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -44,8 +50,8 @@ jobs:
       - name: Verify the tag matches package.json
         run: |
           PKG_VERSION="v$(node -p "require('./package.json').version")"
-          if [ "$PKG_VERSION" != "$GITHUB_REF_NAME" ]; then
-            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $PKG_VERSION"
+          if [ "$PKG_VERSION" != "$TAG" ]; then
+            echo "::error::Tag $TAG does not match package.json version $PKG_VERSION"
             exit 1
           fi
 
@@ -63,11 +69,13 @@ jobs:
 
       - name: Publish to npm
         if: steps.published.outputs.already == 'false'
-        run: npm publish --access public
+        # Verbose so the OIDC token exchange is visible in the log; npm only
+        # reports trusted-publishing failures at this level.
+        run: npm publish --access public --loglevel verbose
 
       - name: Extract release notes from CHANGELOG.md
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
+          VERSION="${TAG#v}"
           awk -v ver="$VERSION" '
             $0 ~ "^## \\[" ver "\\]" { found = 1; next }
             found && /^## \[/ { exit }
@@ -82,11 +90,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            echo "Release $GITHUB_REF_NAME already exists; skipping."
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; skipping."
           else
-            gh release create "$GITHUB_REF_NAME" \
-              --title "$GITHUB_REF_NAME" \
+            gh release create "$TAG" \
+              --title "$TAG" \
               --notes-file release-notes.md \
               --verify-tag
           fi
