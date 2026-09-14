@@ -1,0 +1,60 @@
+name: Bug report
+description: Something does not behave as documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill in as much as you can; a runnable reproduction is the fastest route to a fix.
+
+        Do not include your API key anywhere in this report.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug, including any error message.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: The smallest code that shows the problem. Use a fake `client` if the issue is not about the API itself.
+      render: ts
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: ai-email-validator version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: node
+    attributes:
+      label: Node.js version
+      placeholder: 22.11.0
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Model
+      description: Only if the bug involves the model's behaviour.
+      placeholder: gpt-5.6-sol
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I have searched the existing issues.
+          required: true
+        - label: I am not reporting that the model gave a wrong verdict for a syntactically obvious address. (That is expected occasionally; see the README disclaimer.)
+          required: true
