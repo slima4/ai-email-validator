@@ -1,6 +1,7 @@
 name: Release
 
 # Publishes to npm and creates a GitHub Release when a `v*` tag is pushed.
+# Can also be run manually against an existing tag.
 #
 # Publishing uses npm trusted publishing (OpenID Connect): no npm token is
 # stored in the repository. The package on npmjs.com must list this
@@ -23,16 +24,21 @@ permissions:
   id-token: write
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ inputs.tag || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
   publish:
-    name: Publish ${{ github.ref_name }}
+    name: Publish ${{ inputs.tag || github.ref_name }}
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve tag
+        run: echo "TAG=${{ inputs.tag || github.ref_name }}" >> "$GITHUB_ENV"
+
       - name: Check out
         uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
