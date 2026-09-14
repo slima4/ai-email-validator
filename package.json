@@ -75,7 +75,7 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
     "@eslint/js": "^10.0.1",
-    "@types/node": "^22.0.0",
+    "@types/node": "^26.5.1",
     "@vitest/coverage-v8": "^5.0.0",
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
@@ -83,7 +83,7 @@
     "prettier": "^3.9.6",
     "publint": "^0.3.24",
     "tsup": "^8.5.1",
-    "typescript": "^5.9.3",
+    "typescript": "^7.0.2",
     "typescript-eslint": "^8.70.0",
     "vitest": "^5.0.0"
   }
