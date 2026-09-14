@@ -4,7 +4,7 @@ import { type ResponseCreateParamsNonStreaming } from "openai/resources/response
 import {
   type EmailValidationRequestOptions,
   type EmailValidationResponse,
-  createDefaultClient,
+  getDefaultClient,
 } from "./client.js";
 import { ApiError, ConfigurationError, StructuredOutputError } from "./errors.js";
 import { assertEmailInput } from "./input.js";
@@ -44,12 +44,12 @@ export async function validateEmail(
   options: ValidateEmailOptions = {},
 ): Promise<EmailValidationResult> {
   const normalizedEmail = assertEmailInput(email);
-  const client = options.client ?? createDefaultClient(options.apiKey);
-  const model = options.model ?? modelFromEnvironment() ?? DEFAULT_MODEL;
+  const model = resolveModel(options.model);
   const reasoningEffort = options.reasoningEffort ?? DEFAULT_REASONING_EFFORT;
+  const requestOptions = buildRequestOptions(options);
+  const client = options.client ?? getDefaultClient(options.apiKey);
 
   const params = buildRequestParams(normalizedEmail, model, reasoningEffort);
-  const requestOptions = buildRequestOptions(options);
 
   let response: EmailValidationResponse;
   try {
@@ -135,12 +135,30 @@ function buildRequestOptions(options: ValidateEmailOptions): EmailValidationRequ
     requestOptions.timeout = options.timeoutMs;
   }
 
+  if (options.maxRetries !== undefined) {
+    if (!Number.isInteger(options.maxRetries) || options.maxRetries < 0) {
+      throw new ConfigurationError(
+        `maxRetries must be a non-negative integer, received ${String(options.maxRetries)}.`,
+      );
+    }
+    requestOptions.maxRetries = options.maxRetries;
+  }
+
   return requestOptions;
 }
 
-function modelFromEnvironment(): string | undefined {
-  const model = process.env["AI_EMAIL_VALIDATOR_MODEL"]?.trim();
-  return model === undefined || model.length === 0 ? undefined : model;
+function resolveModel(explicit: string | undefined): string {
+  if (explicit !== undefined) {
+    if (typeof explicit !== "string" || explicit.trim().length === 0) {
+      throw new ConfigurationError("model must be a non-empty string.");
+    }
+    return explicit.trim();
+  }
+
+  const fromEnvironment = process.env["AI_EMAIL_VALIDATOR_MODEL"]?.trim();
+  return fromEnvironment === undefined || fromEnvironment.length === 0
+    ? DEFAULT_MODEL
+    : fromEnvironment;
 }
 
 function extractVerdict(response: EmailValidationResponse): EmailValidationVerdict {

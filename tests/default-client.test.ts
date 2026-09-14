@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type * as OpenAIModule from "openai";
 
+import { resetDefaultClients } from "../src/client.js";
 import { validateEmail } from "../src/index.js";
 import { makeResponse } from "./helpers/fake-client.js";
 
@@ -30,6 +31,7 @@ vi.mock("openai", async (importOriginal) => {
 afterEach(() => {
   mocks.constructorArgs.length = 0;
   mocks.create.mockReset();
+  resetDefaultClients();
   vi.unstubAllEnvs();
 });
 
@@ -65,16 +67,50 @@ describe("default client", () => {
     expect(client.responses.create).toHaveBeenCalledTimes(1);
   });
 
+  it("is created once per API key and reused across calls", async () => {
+    vi.stubEnv("OPENAI_API_KEY", "sk-from-env");
+    mocks.create.mockResolvedValue(makeResponse());
+
+    await validateEmail("john@example.com");
+    await validateEmail("jane@example.com");
+    await validateEmail("john@example.com", { apiKey: "sk-from-env" });
+
+    expect(mocks.constructorArgs).toEqual([{ apiKey: "sk-from-env" }]);
+    expect(mocks.create).toHaveBeenCalledTimes(3);
+  });
+
+  it("is created separately for different API keys", async () => {
+    mocks.create.mockResolvedValue(makeResponse());
+
+    await validateEmail("john@example.com", { apiKey: "sk-one" });
+    await validateEmail("john@example.com", { apiKey: "sk-two" });
+    await validateEmail("john@example.com", { apiKey: "sk-one" });
+
+    expect(mocks.constructorArgs).toEqual([{ apiKey: "sk-one" }, { apiKey: "sk-two" }]);
+  });
+
+  it("is not created when the input is rejected first", async () => {
+    vi.stubEnv("OPENAI_API_KEY", "sk-from-env");
+
+    await expect(validateEmail("")).rejects.toThrow();
+
+    expect(mocks.constructorArgs).toEqual([]);
+  });
+
   it("passes the request parameters and options through unchanged", async () => {
     vi.stubEnv("OPENAI_API_KEY", "sk-from-env");
     mocks.create.mockResolvedValue(makeResponse());
     const controller = new AbortController();
 
-    await validateEmail("john@example.com", { signal: controller.signal, timeoutMs: 1_000 });
+    await validateEmail("john@example.com", {
+      signal: controller.signal,
+      timeoutMs: 1_000,
+      maxRetries: 0,
+    });
 
     expect(mocks.create).toHaveBeenCalledWith(
       expect.objectContaining({ model: "gpt-5.6-sol", reasoning: { effort: "max" } }),
-      { signal: controller.signal, timeout: 1_000 },
+      { signal: controller.signal, timeout: 1_000, maxRetries: 0 },
     );
   });
 });

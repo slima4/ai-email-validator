@@ -150,6 +150,36 @@ describe("configuration errors", () => {
     );
   });
 
+  it.each([-1, 1.5, Number.NaN, Number.POSITIVE_INFINITY])(
+    "rejects maxRetries = %s with a ConfigurationError",
+    async (maxRetries) => {
+      const { client, calls } = createFakeClient();
+
+      await expect(validateEmail("john@example.com", { client, maxRetries })).rejects.toThrow(
+        ConfigurationError,
+      );
+      expect(calls).toHaveLength(0);
+    },
+  );
+
+  it.each(["", "   "])("rejects model = %j with a ConfigurationError", async (model) => {
+    const { client, calls } = createFakeClient();
+
+    await expect(validateEmail("john@example.com", { client, model })).rejects.toThrow(
+      ConfigurationError,
+    );
+    expect(calls).toHaveLength(0);
+  });
+
+  it("rejects a non-string model with a ConfigurationError", async () => {
+    const { client, calls } = createFakeClient();
+
+    await expect(
+      validateEmail("john@example.com", { client, model: 42 as unknown as string }),
+    ).rejects.toThrow(ConfigurationError);
+    expect(calls).toHaveLength(0);
+  });
+
   it.each([0, -1, Number.NaN, Number.POSITIVE_INFINITY])(
     "rejects timeoutMs = %s with a ConfigurationError",
     async (timeoutMs) => {

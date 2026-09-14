@@ -37,6 +37,12 @@ export interface ValidateEmailOptions {
    */
   timeoutMs?: number;
 
+  /**
+   * How many times to retry a failed request (connection errors, 408, 409,
+   * 429 and 5xx) before giving up. Defaults to the OpenAI SDK default of 2.
+   */
+  maxRetries?: number;
+
   /** Abort the request early. The rejection is surfaced as an {@link ApiError}. */
   signal?: AbortSignal;
 

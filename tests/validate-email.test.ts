@@ -211,6 +211,22 @@ describe("validateEmail", () => {
       expect(calls[0]?.options).toEqual({ signal: controller.signal, timeout: 5_000 });
     });
 
+    it("forwards maxRetries to the client", async () => {
+      const { client, calls } = createFakeClient(verdictResponse(true));
+
+      await validateEmail("john@example.com", { client, maxRetries: 5 });
+
+      expect(calls[0]?.options).toEqual({ maxRetries: 5 });
+    });
+
+    it("trims the model name", async () => {
+      const { client, calls } = createFakeClient(verdictResponse(true));
+
+      await validateEmail("john@example.com", { client, model: "  gpt-5.6-terra  " });
+
+      expect(calls[0]?.params.model).toBe("gpt-5.6-terra");
+    });
+
     it("sends no request options when none are configured", async () => {
       const { client, calls } = createFakeClient(verdictResponse(true));
 
