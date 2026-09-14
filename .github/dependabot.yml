@@ -7,6 +7,15 @@ updates:
     groups:
       dev-dependencies:
         dependency-type: development
+    ignore:
+      # typescript-eslint supports TypeScript < 6.1; TypeScript 7 (the native
+      # port) also drops the compiler API that tsup's declaration build uses.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+      # Keep the Node.js type definitions close to the minimum supported
+      # runtime so the build cannot lean on APIs that Node.js 20 lacks.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     labels: ["dependencies"]
 
   - package-ecosystem: github-actions
