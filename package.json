@@ -56,13 +56,14 @@
   },
   "scripts": {
     "build": "tsup",
+    "check:package": "publint && attw --pack .",
     "clean": "rm -rf dist coverage",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepare": "npm run build",
-    "prepublishOnly": "npm run lint && npm run typecheck && npm test && npm run build",
+    "prepublishOnly": "npm run lint && npm run typecheck && npm test && npm run build && npm run check:package",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
@@ -72,6 +73,7 @@
     "openai": "^7.15.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@eslint/js": "^10.0.1",
     "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "^5.0.0",
@@ -79,6 +81,7 @@
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.12.0",
     "prettier": "^3.9.6",
+    "publint": "^0.3.24",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.70.0",

@@ -48,5 +48,21 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Verify package contents
-        run: npm pack --dry-run
+      - name: Check package exports and types
+        run: npm run check:package
+
+  audit:
+    name: Audit production dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Audit
+        run: npm audit --omit=dev --audit-level=high
